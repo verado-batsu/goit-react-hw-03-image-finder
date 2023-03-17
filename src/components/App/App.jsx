@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 
 import { Searchbar } from 'components/Searchbar/Searchbar';
 import { Container } from './App.styled';
