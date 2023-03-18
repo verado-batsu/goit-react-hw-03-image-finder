@@ -6,6 +6,12 @@ import { Modal } from "components/Modal/Modal";
 import { getImages } from "services/pixabayApi";
 import { ImageItem } from "./ImageGalleryItem.styled";
 
+const Status = {
+	IDLE: 'idle',
+	PENDING: 'pending',
+	RESOLVED: 'resolved',
+	REJECTED: 'rejected',
+}
 
 export class ImageGalleryItem extends Component {
 	state = {
@@ -19,6 +25,12 @@ export class ImageGalleryItem extends Component {
 
 		if (prevProps.searchValue !== searchValue) {
 			getCardsAndLoadStatus(false, true);
+
+			document.body.scrollIntoView({
+				block: 'start',
+				behavior: 'smooth',
+			});
+
 			getImages(searchValue)
 				.then(res => {
 					return res.json();
@@ -56,6 +68,7 @@ export class ImageGalleryItem extends Component {
 
 		if (page !== 1 && prevProps.page !== page && this.state.images !== null) {
 			getCardsAndLoadStatus(false, true);
+
 			getImages(searchValue, page)
 				.then(res => res.json())
 				.then(({ hits }) => {
@@ -83,8 +96,8 @@ export class ImageGalleryItem extends Component {
 				});
 		}
 
-		if (prevState?.images?.length !== this?.state?.images?.length) {
-			document.body.scrollIntoView({
+		if (prevState?.images?.length !== this?.state?.images?.length && this?.state?.images?.length > 12) {
+				document.body.scrollIntoView({
 				block: 'end',
 				behavior: 'smooth',
 			})

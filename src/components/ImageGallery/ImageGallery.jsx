@@ -5,6 +5,5 @@ export function ImageGallery({children}) {
 			<GalleryList className="gallery">
 				{children}
 			</GalleryList>
-		
 	);
 }

@@ -41,10 +41,6 @@ export class Searchbar extends Component {
 						<AiOutlineSearch
 							className="button-label"
 						/>
-						
-						{/* <span className="button-label">
-							<AiOutlineSearch />
-						</span> */}
 					</button>
 
 					<input
