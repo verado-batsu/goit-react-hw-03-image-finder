@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { AiOutlineSearch } from 'react-icons/ai';
 import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 
 import { SearchWrapper } from "./Searchbar.styled";
 
@@ -22,7 +23,7 @@ export class Searchbar extends Component {
 		const { onSubmit } = this.props;
 
 		if (searchValue === '') {
-			toast.error('Введіть якесь значення в інпут.');
+			toast.error('Введіть якесь значення в пошук.');
 			return;
 		}
 		onSubmit(searchValue);
@@ -33,7 +34,6 @@ export class Searchbar extends Component {
 	}
 
 	render() {
-		
 		return (
 			<SearchWrapper>
 				<form className="form" onSubmit={this.handleSubmit}>
@@ -60,4 +60,8 @@ export class Searchbar extends Component {
 			</SearchWrapper>
 		)
 	}
+}
+
+Searchbar.propTypes = {
+	onSubmit: PropTypes.func.isRequired
 }

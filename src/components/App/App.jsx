@@ -1,7 +1,7 @@
-// import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Triangle } from 'react-loader-spinner'
 
 import { Container } from './App.styled';
 
@@ -10,12 +10,12 @@ import { ImageGallery } from 'components/ImageGallery/ImageGallery';
 import { ImageGalleryItem } from "components/ImageGalleryItem/ImageGalleryItem";
 import { Button } from 'components/Button/Button';
 
-
 export class App extends Component {
 	state = {
 		searchValue: '',
 		cards: false,
 		page: 1,
+		loading: false,
 	}
 
 	getSearchValue = (value) => {
@@ -25,11 +25,14 @@ export class App extends Component {
 		})
 	}
 
-	getCards = (cards) => {
-		this.setState({ cards });
+	getCardsAndLoadStatus = (cards, loading) => {
+		this.setState({
+			cards,
+			loading
+		});
 	}
 
-	loadMoreClick = () => {
+	loadMoreClick = (e) => {
 		this.setState(prevState => {
 			return {
 				page: prevState.page + 1,
@@ -38,7 +41,7 @@ export class App extends Component {
 	}
 
 	render() {
-		const { searchValue } = this.state;
+		const { searchValue, page } = this.state;
 
 		return (
 			<Container>
@@ -50,10 +53,21 @@ export class App extends Component {
 				<ImageGallery>
 					<ImageGalleryItem
 						searchValue={searchValue}
-						getCards={this.getCards}
-						page={this.state.page}
+						getCardsAndLoadStatus={this.getCardsAndLoadStatus}
+						page={page}
 					/>
 				</ImageGallery>
+
+				<Triangle
+					height="60"
+					width="60"
+					color="#4fa94d"
+					ariaLabel="triangle-loading"
+					wrapperStyle={{}}
+					wrapperClassName=''
+					visible={this.state.loading}
+				/>
+
 				{this.state.cards && <Button onClick={this.loadMoreClick} />}
 			</Container>
 		);

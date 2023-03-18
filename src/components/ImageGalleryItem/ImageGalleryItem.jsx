@@ -1,5 +1,8 @@
+import PropTypes from 'prop-types';
 import { Component } from "react";
 import { toast } from 'react-toastify';
+
+import { Modal } from "components/Modal/Modal";
 import { getImages } from "services/pixabayApi";
 import { ImageItem } from "./ImageGalleryItem.styled";
 
@@ -7,14 +10,17 @@ import { ImageItem } from "./ImageGalleryItem.styled";
 export class ImageGalleryItem extends Component {
 	state = {
 		images: null,
+		modal: false,
+		modalImgUrl: '',
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		const { searchValue, getCards, page } = this.props;
+		const { searchValue, getCardsAndLoadStatus, page } = this.props;
 
 		if (prevProps.searchValue !== searchValue) {
+			getCardsAndLoadStatus(false, true);
 			getImages(searchValue)
-				.then(res => { 
+				.then(res => {
 					return res.json();
 				})
 				.then(({ hits }) => {
@@ -24,7 +30,7 @@ export class ImageGalleryItem extends Component {
 							images: null,
 						});
 
-						getCards(false);
+						getCardsAndLoadStatus(false, false);
 						return;
 					}
 
@@ -37,16 +43,19 @@ export class ImageGalleryItem extends Component {
 						return [...acc, image]
 					}, [])
 					
+					// console.log('search ',images);
+
 					this.setState({ images });
 
-					getCards(true);
+					getCardsAndLoadStatus(true, false);
 				})
 				.catch(error => {
 					console.log(error);
 				});
 		}
 
-		if (prevProps.page !== page && this.state.images !== null) {
+		if (page !== 1 && prevProps.page !== page && this.state.images !== null) {
+			getCardsAndLoadStatus(false, true);
 			getImages(searchValue, page)
 				.then(res => res.json())
 				.then(({ hits }) => {
@@ -59,30 +68,93 @@ export class ImageGalleryItem extends Component {
 						return [...acc, image]
 					}, [])
 
+					// console.log('page ',images);
+
 					this.setState(prevState => {
 						return {
 							images: [...prevState.images, ...images]
 						}
 					});
+
+					getCardsAndLoadStatus(true, false);
 				})
-				.catch(error => console.log(error));
+				.catch(error => {
+					console.log(error)
+				});
+		}
+
+		if (prevState?.images?.length !== this?.state?.images?.length) {
+			document.body.scrollIntoView({
+				block: 'end',
+				behavior: 'smooth',
+			})
 		}
 	}
 
+	handleImgClick = (e) => {
+		const currentId = +(e?.target?.id);
+
+		if (e?.target?.id === 'largeImg') {	
+			return;
+		}
+
+		if (currentId) {
+			this.takeModalUrl(currentId);
+		}
+
+		this.setState(prevState => {
+			return {
+				modal: !prevState.modal,
+			}
+		})
+	}
+
+
+	takeModalUrl = (id) => {
+		const modalImg = this.state.images.find(img => {
+			return img.id === id
+		});
+
+		this.setState({
+			modalImgUrl: modalImg.largeImageURL,
+		})
+	}
+
 	render() {
-		const { images } = this.state;
+		const { images, modal, modalImgUrl } = this.state;
 		const { searchValue } = this.props;
 
 		return (
-			images && (
-					images.map(({ id, webformatURL, largeImageURL }) => {
-						return (
-							<ImageItem key={id} className="gallery-item">
-								<img src={webformatURL} alt={searchValue} />
-							</ImageItem>
-						)
-					})
-				)	
+			<>
+				{images && (
+						images.map(({ id, webformatURL}) => {
+							return (
+								<ImageItem key={id} className="gallery-item">
+									<img
+										id={id}
+										src={webformatURL}
+										alt={searchValue}
+										onClick={this.handleImgClick}
+									/>
+								</ImageItem>
+							)
+						})
+				)}
+
+				{modal &&
+					<Modal
+						url={modalImgUrl}
+						alt={searchValue}
+						onClick={this.handleImgClick}
+					/>
+				}
+			</>	
 		)
 	}
+}
+
+ImageGalleryItem.propTypes = {
+	searchValue: PropTypes.string.isRequired,
+	getCardsAndLoadStatus: PropTypes.func.isRequired,
+	page: PropTypes.number.isRequired,
 }

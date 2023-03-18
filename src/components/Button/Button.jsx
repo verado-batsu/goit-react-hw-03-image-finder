@@ -1,4 +1,6 @@
 import { Component } from "react";
+import PropTypes from 'prop-types';
+
 import { LoadMoreBtn } from "./Button.styled";
 
 export class Button extends Component {
@@ -9,4 +11,8 @@ export class Button extends Component {
 		</LoadMoreBtn>
 		)
 	}
+}
+
+Button.propTypes = {
+	onClick: PropTypes.func.isRequired,
 }
