@@ -6,13 +6,6 @@ import { Modal } from "components/Modal/Modal";
 import { getImages } from "services/pixabayApi";
 import { ImageItem } from "./ImageGalleryItem.styled";
 
-const Status = {
-	IDLE: 'idle',
-	PENDING: 'pending',
-	RESOLVED: 'resolved',
-	REJECTED: 'rejected',
-}
-
 export class ImageGalleryItem extends Component {
 	state = {
 		images: null,
